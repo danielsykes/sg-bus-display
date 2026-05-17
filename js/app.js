@@ -6,7 +6,7 @@ const CONFIG = {
   apiUrl: "https://sg-bus-proxy.danielsykes.workers.dev",
   busStopCode: "11369",
   serviceNo: "92",
-  refreshInterval: 30_000,
+  refreshInterval: 10_000,
   stopLat: 1.31637,
   stopLng: 103.78936,
 };
