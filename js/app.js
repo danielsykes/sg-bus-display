@@ -130,12 +130,16 @@ function renderArrivals(data) {
         mins === null ? "—" : isArriving ? "Arr" : String(mins);
       const unit = mins === null ? "" : isArriving ? "" : "min";
       const load = bus.data?.Load || "";
+      const eta = bus.data?.EstimatedArrival
+        ? new Date(bus.data.EstimatedArrival).toLocaleTimeString("en-SG", { hour: "2-digit", minute: "2-digit", hour12: true })
+        : "";
 
       return `
         <div class="arrival-card ${i === 0 ? "next" : ""}">
           <div class="arrival-label">${bus.label}</div>
           <div class="arrival-minutes ${isArriving ? "arriving" : ""}">${minsText}</div>
           <div class="arrival-unit">${unit}</div>
+          <div class="arrival-eta">${eta}</div>
           ${
             load
               ? `<div class="load-indicator">

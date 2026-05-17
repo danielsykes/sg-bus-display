@@ -113,6 +113,12 @@ main {
   color: var(--dim);
 }
 
+.arrival-eta {
+  font-size: 0.85rem;
+  color: var(--accent);
+  opacity: 0.8;
+}
+
 /* ── Load Indicator ──────────────────────────────────── */
 .load-indicator {
   margin-left: auto;
