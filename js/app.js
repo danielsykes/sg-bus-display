@@ -6,8 +6,7 @@
  */
 
 const CONFIG = {
-  // Replace with your deployed Cloudflare Worker URL
-  apiUrl: "https://YOUR-WORKER.workers.dev",
+  apiUrl: "https://sg-bus-proxy.danielsykes.workers.dev",
   busStopCode: "11369",
   serviceNo: "92",
   refreshInterval: 30_000, // 30 seconds
