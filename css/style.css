@@ -177,6 +177,33 @@ main {
 
 .arriving { color: var(--green); }
 
+.service-offline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 16px;
+  text-align: center;
+}
+
+.offline-title {
+  font-size: 1.6rem;
+  color: var(--dim);
+}
+
+.offline-detail {
+  font-size: 1.1rem;
+  color: var(--dim);
+  opacity: 0.7;
+}
+
+.offline-next {
+  font-size: 1.3rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* ── Footer ──────────────────────────────────────────── */
 footer {
   display: flex;
@@ -216,34 +243,6 @@ footer {
   padding: 4px;
   font-size: 0.75rem;
   color: var(--dim);
-}
-
-/* ── Traffic Camera ──────────────────────────────────── */
-#camera-container {
-  height: 140px;
-  border-radius: 16px;
-  overflow: hidden;
-  background: var(--surface);
-  position: relative;
-  flex-shrink: 0;
-}
-
-#camera-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.camera-label {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 4px 10px;
-  font-size: 0.7rem;
-  color: var(--dim);
-  background: linear-gradient(transparent, rgba(15, 25, 35, 0.85));
 }
 
 /* Dark map tiles */

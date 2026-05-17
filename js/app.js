@@ -1,5 +1,5 @@
 ﻿/*
- * sg-bus-display — Bus 92 arrival times at Henry Park
+ * sg-bus-display - Bus 92 arrival times at Henry Park
  */
 
 const CONFIG = {
@@ -10,8 +10,44 @@ const CONFIG = {
   stopLat: 1.31637,
   stopLng: 103.78936,
   weatherArea: "Bukit Timah",
-  cameraRefreshInterval: 60_000,
 };
+
+// Bus 92 schedule at Henry Park (stop 11369) from LTA BusRoutes API
+const SCHEDULE = {
+  WD_FirstBus: "06:22", WD_LastBus: "21:23",
+  SAT_FirstBus: "06:22", SAT_LastBus: "21:29",
+  SUN_FirstBus: "07:04", SUN_LastBus: "20:47",
+};
+
+function getTodaySchedule() {
+  const day = new Date().getDay();
+  if (day === 0) return { first: SCHEDULE.SUN_FirstBus, last: SCHEDULE.SUN_LastBus, label: "Sun" };
+  if (day === 6) return { first: SCHEDULE.SAT_FirstBus, last: SCHEDULE.SAT_LastBus, label: "Sat" };
+  return { first: SCHEDULE.WD_FirstBus, last: SCHEDULE.WD_LastBus, label: "Weekday" };
+}
+
+function getNextServiceTime() {
+  const now = new Date();
+  const hhmm = now.getHours() * 100 + now.getMinutes();
+  const today = getTodaySchedule();
+  const todayLast = parseInt(today.last.replace(":", ""));
+  const todayFirst = parseInt(today.first.replace(":", ""));
+
+  if (hhmm < todayFirst) {
+    return { lastBus: null, nextBus: today.first, nextLabel: "today" };
+  }
+
+  // After last bus - figure out tomorrow's first
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tDay = tomorrow.getDay();
+  let nextFirst;
+  if (tDay === 0) nextFirst = SCHEDULE.SUN_FirstBus;
+  else if (tDay === 6) nextFirst = SCHEDULE.SAT_FirstBus;
+  else nextFirst = SCHEDULE.WD_FirstBus;
+
+  return { lastBus: today.last, nextBus: nextFirst, nextLabel: "tomorrow" };
+}
 
 // -- Clock
 function updateClock() {
@@ -68,30 +104,6 @@ async function refreshWeather() {
       `<span>${forecast}</span>`;
   } catch (e) {
     console.error("Weather fetch failed:", e);
-  }
-}
-
-// -- Traffic Camera
-async function refreshCamera() {
-  try {
-    const res = await fetch("https://api.data.gov.sg/v1/transport/traffic-images");
-    const data = await res.json();
-    const cams = data.items[0].cameras;
-
-    let best = null;
-    let bestDist = Infinity;
-    cams.forEach((c) => {
-      const d = Math.hypot(c.location.latitude - CONFIG.stopLat, c.location.longitude - CONFIG.stopLng);
-      if (d < bestDist) { bestDist = d; best = c; }
-    });
-
-    if (best) {
-      document.getElementById("camera-img").src = best.image;
-      document.getElementById("camera-label").textContent =
-        `\ud83d\udcf7 Nearest cam \u00b7 ${new Date(best.timestamp).toLocaleTimeString("en-SG", { hour: "2-digit", minute: "2-digit" })}`;
-    }
-  } catch (e) {
-    console.error("Camera fetch failed:", e);
   }
 }
 
@@ -171,13 +183,33 @@ function loadClass(code) {
   return `load-${(code || "").toLowerCase()}`;
 }
 
+function renderOffline() {
+  const main = document.getElementById("arrivals");
+  const info = getNextServiceTime();
+
+  let html = `<div class="service-offline">`;
+  html += `<div class="offline-title">\ud83c\udf19 Bus 92 has ended for today</div>`;
+
+  if (info.lastBus) {
+    html += `<div class="offline-detail">Last bus was at ${info.lastBus}</div>`;
+  }
+
+  html += `<div class="offline-next">\u2192 First bus ${info.nextLabel}: ${info.nextBus}</div>`;
+
+  const sched = getTodaySchedule();
+  html += `<div class="offline-detail">${sched.label} hours: ${sched.first} \u2013 ${sched.last}</div>`;
+  html += `</div>`;
+
+  main.innerHTML = html;
+  updateBusMarkers([]);
+}
+
 function renderArrivals(data) {
   const main = document.getElementById("arrivals");
   const service = data.Services && data.Services[0];
 
   if (!service) {
-    main.innerHTML = `<div class="error-msg">Bus 92 is not operating right now</div>`;
-    updateBusMarkers([]);
+    renderOffline();
     return;
   }
 
@@ -253,6 +285,3 @@ setInterval(refresh, CONFIG.refreshInterval);
 
 refreshWeather();
 setInterval(refreshWeather, 300_000);
-
-refreshCamera();
-setInterval(refreshCamera, CONFIG.cameraRefreshInterval);
