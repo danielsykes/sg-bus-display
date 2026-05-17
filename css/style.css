@@ -1,0 +1,152 @@
+/* ── Reset & Base ────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:       #0f1923;
+  --surface:  #1a2a3a;
+  --text:     #e8edf2;
+  --dim:      #7a8ea0;
+  --accent:   #4fc3f7;
+  --green:    #66bb6a;
+  --yellow:   #fdd835;
+  --red:      #ef5350;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* ── Layout (optimised for 1024×600 Nest Hub) ────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px 32px;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+#clock {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--dim);
+  margin-right: auto;
+}
+
+.route-badge {
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 4px 20px;
+  border-radius: 8px;
+  line-height: 1.2;
+}
+
+.stop-name {
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+/* ── Arrivals Grid ───────────────────────────────────── */
+main {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.arrival-card {
+  flex: 1;
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: opacity 0.3s;
+}
+
+.arrival-card.next {
+  border: 2px solid var(--accent);
+}
+
+.arrival-label {
+  font-size: 1rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.arrival-minutes {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.arrival-unit {
+  font-size: 1.3rem;
+  color: var(--dim);
+  margin-top: 4px;
+}
+
+.arrival-destination {
+  font-size: 0.95rem;
+  color: var(--dim);
+  margin-top: 12px;
+}
+
+/* ── Load Indicator ──────────────────────────────────── */
+.load-indicator {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.load-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.load-sea { background: var(--green); }
+.load-sda { background: var(--yellow); }
+.load-lsd { background: var(--red); }
+
+/* ── States ──────────────────────────────────────────── */
+.loading, .error-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 1.4rem;
+  color: var(--dim);
+}
+
+.error-msg { color: var(--red); }
+
+.arriving { color: var(--green); }
+
+/* ── Footer ──────────────────────────────────────────── */
+footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  font-size: 0.85rem;
+  color: var(--dim);
+}
