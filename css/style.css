@@ -59,23 +59,28 @@ header {
 }
 
 /* ── Arrivals Grid ───────────────────────────────────── */
-main {
+.content {
   flex: 1;
   display: flex;
   gap: 20px;
-  align-items: stretch;
+  min-height: 0;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .arrival-card {
   flex: 1;
   background: var(--surface);
   border-radius: 16px;
-  padding: 28px 24px;
+  padding: 16px 24px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  gap: 20px;
   transition: opacity 0.3s;
 }
 
@@ -84,38 +89,37 @@ main {
 }
 
 .arrival-label {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--dim);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 8px;
+  width: 40px;
 }
 
 .arrival-minutes {
-  font-size: 5rem;
+  font-size: 3.2rem;
   font-weight: 700;
   line-height: 1;
+  min-width: 80px;
 }
 
 .arrival-unit {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: var(--dim);
-  margin-top: 4px;
 }
 
 .arrival-destination {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--dim);
-  margin-top: 12px;
 }
 
 /* ── Load Indicator ──────────────────────────────────── */
 .load-indicator {
-  margin-top: 16px;
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .load-dot {
@@ -149,4 +153,58 @@ footer {
   margin-top: 20px;
   font-size: 0.85rem;
   color: var(--dim);
+}
+
+/* ── Map ─────────────────────────────────────────────── */
+#map-container {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+#map {
+  flex: 1;
+  min-height: 0;
+  border-radius: 16px;
+}
+
+.map-status {
+  text-align: center;
+  padding: 6px;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+/* Dark map tiles */
+.leaflet-tile-pane { filter: brightness(0.7) contrast(1.1) saturate(0.3); }
+.leaflet-control-attribution { display: none !important; }
+
+/* Bus marker pulse */
+.bus-icon {
+  background: var(--accent);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+}
+
+.bus-icon-dim {
+  background: var(--dim);
+  border: 2px solid #556;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+}
+
+.stop-icon {
+  background: var(--red);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  box-shadow: 0 0 6px rgba(239, 83, 80, 0.5);
 }

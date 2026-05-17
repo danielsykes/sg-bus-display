@@ -1,15 +1,14 @@
 /*
  * sg-bus-display — Bus 92 arrival times at Henry Park
- *
- * Configure your Cloudflare Worker URL below.
- * See worker/worker.js for the proxy that calls LTA DataMall.
  */
 
 const CONFIG = {
   apiUrl: "https://sg-bus-proxy.danielsykes.workers.dev",
   busStopCode: "11369",
   serviceNo: "92",
-  refreshInterval: 30_000, // 30 seconds
+  refreshInterval: 30_000,
+  stopLat: 1.31637,
+  stopLng: 103.78936,
 };
 
 // ── Clock ──────────────────────────────────────────────
@@ -19,6 +18,60 @@ function updateClock() {
     "en-SG",
     { hour: "2-digit", minute: "2-digit", hour12: true }
   );
+}
+
+// ── Map Setup ──────────────────────────────────────────
+const map = L.map("map", {
+  zoomControl: false,
+  attributionControl: false,
+  dragging: false,
+  scrollWheelZoom: false,
+  doubleClickZoom: false,
+  touchZoom: false,
+}).setView([CONFIG.stopLat, CONFIG.stopLng], 15);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
+const stopIcon = L.divIcon({ className: "stop-icon", iconSize: [16, 16] });
+L.marker([CONFIG.stopLat, CONFIG.stopLng], { icon: stopIcon })
+  .addTo(map)
+  .bindTooltip("Henry Park", { permanent: true, direction: "top", className: "stop-tooltip", offset: [0, -12] });
+
+const busMarkers = [];
+
+function updateBusMarkers(buses) {
+  // Remove old markers
+  busMarkers.forEach((m) => map.removeLayer(m));
+  busMarkers.length = 0;
+
+  const validBuses = buses.filter(
+    (b) => b.lat && b.lng && b.lat !== 0 && b.lng !== 0
+  );
+
+  const statusEl = document.getElementById("map-status");
+
+  if (validBuses.length === 0) {
+    statusEl.textContent = "No GPS — waiting for tracked buses";
+    map.setView([CONFIG.stopLat, CONFIG.stopLng], 15);
+    return;
+  }
+
+  statusEl.textContent = `${validBuses.length} bus${validBuses.length > 1 ? "es" : ""} tracked live`;
+
+  validBuses.forEach((bus, i) => {
+    const icon = L.divIcon({
+      className: i === 0 ? "bus-icon" : "bus-icon-dim",
+      iconSize: i === 0 ? [18, 18] : [14, 14],
+    });
+    const marker = L.marker([bus.lat, bus.lng], { icon })
+      .addTo(map)
+      .bindTooltip(bus.label, { permanent: true, direction: "top", offset: [0, -12] });
+    busMarkers.push(marker);
+  });
+
+  // Fit map to show stop + all buses
+  const points = [[CONFIG.stopLat, CONFIG.stopLng], ...validBuses.map((b) => [b.lat, b.lng])];
+  map.fitBounds(L.latLngBounds(points).pad(0.15));
 }
 
 // ── Fetch Arrivals ─────────────────────────────────────
@@ -37,8 +90,8 @@ function minutesUntil(isoString) {
 }
 
 function loadLabel(code) {
-  const map = { SEA: "Seats available", SDA: "Standing only", LSD: "Full" };
-  return map[code] || "Unknown";
+  const map = { SEA: "Seats avail", SDA: "Standing", LSD: "Full" };
+  return map[code] || "";
 }
 
 function loadClass(code) {
@@ -51,6 +104,7 @@ function renderArrivals(data) {
 
   if (!service) {
     main.innerHTML = `<div class="error-msg">Bus 92 is not operating right now</div>`;
+    updateBusMarkers([]);
     return;
   }
 
@@ -60,6 +114,14 @@ function renderArrivals(data) {
     { label: "3rd", data: service.NextBus3 },
   ];
 
+  // Update map markers
+  const busPositions = buses.map((bus) => ({
+    label: bus.label,
+    lat: parseFloat(bus.data?.Latitude) || 0,
+    lng: parseFloat(bus.data?.Longitude) || 0,
+  }));
+  updateBusMarkers(busPositions);
+
   main.innerHTML = buses
     .map((bus, i) => {
       const mins = minutesUntil(bus.data?.EstimatedArrival);
@@ -67,9 +129,6 @@ function renderArrivals(data) {
       const minsText =
         mins === null ? "—" : isArriving ? "Arr" : String(mins);
       const unit = mins === null ? "" : isArriving ? "" : "min";
-      const dest = bus.data?.DestinationCode
-        ? `→ ${bus.data.DestinationCode}`
-        : "";
       const load = bus.data?.Load || "";
 
       return `
@@ -85,7 +144,6 @@ function renderArrivals(data) {
                  </div>`
               : ""
           }
-          <div class="arrival-destination">${dest}</div>
         </div>`;
     })
     .join("");
