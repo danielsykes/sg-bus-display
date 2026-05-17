@@ -11,6 +11,7 @@
   <div id="app">
     <header>
       <div id="clock"></div>
+      <div id="weather"></div>
       <div class="route-badge">92</div>
       <div class="stop-name">Henry Park</div>
     </header>
@@ -20,10 +21,16 @@
         <div class="loading">Loading bus times…</div>
       </main>
 
-      <aside id="map-container">
-        <div id="map"></div>
-        <div id="map-status" class="map-status">Locating buses…</div>
-      </aside>
+      <div class="right-panel">
+        <aside id="map-container">
+          <div id="map"></div>
+          <div id="map-status" class="map-status">Locating buses…</div>
+        </aside>
+        <div id="camera-container">
+          <img id="camera-img" alt="Traffic camera">
+          <div id="camera-label" class="camera-label">Nearest traffic cam</div>
+        </div>
+      </div>
     </div>
 
     <footer>
