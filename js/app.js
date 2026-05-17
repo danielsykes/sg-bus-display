@@ -4,19 +4,19 @@
 
 const CONFIG = {
   apiUrl: "https://sg-bus-proxy.danielsykes.workers.dev",
-  busStopCode: "11369",
+  busStopCode: "12149",
   serviceNo: "92",
   refreshInterval: 10_000,
-  stopLat: 1.31637,
-  stopLng: 103.78936,
+  stopLat: 1.31577,
+  stopLng: 103.78266,
   weatherArea: "Bukit Timah",
 };
 
-// Bus 92 schedule at Henry Park (stop 11369) from LTA BusRoutes API
+// Bus 92 schedule at Henry Park (stop 12149) from LTA BusRoutes API
 const SCHEDULE = {
-  WD_FirstBus: "06:22", WD_LastBus: "21:23",
-  SAT_FirstBus: "06:22", SAT_LastBus: "21:29",
-  SUN_FirstBus: "07:04", SUN_LastBus: "20:47",
+  WD_FirstBus: "06:13", WD_LastBus: "22:01",
+  SAT_FirstBus: "06:14", SAT_LastBus: "22:06",
+  SUN_FirstBus: "06:55", SUN_LastBus: "21:25",
 };
 
 function getTodaySchedule() {
